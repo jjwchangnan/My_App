@@ -1,0 +1,31 @@
+{
+	"changnan":{
+		"done": [
+			{
+				"storeid": "sk1",
+				"goodsid": "mj",
+				"number": 10,
+				"price": 10.5,
+				"status": 0
+			}
+		],
+		"paying": [
+			{
+				"storeid": "lc1",
+				"goodsid": "pt",
+				"number": 1,
+				"price": 21,
+				"status": 1
+			}
+		],
+		"transport":[
+			{
+				"storeid": "xcj1",
+				"goodsid": "lbgcr",
+				"number": 5,
+				"price": 16.5,
+				"status": 2
+			}
+		]
+	}
+}
