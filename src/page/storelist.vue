@@ -20,9 +20,9 @@
         </div>
 
         <div class="st_info">
-            <p>宜宾烧烤</p>
-            <p>月售403 平均配送45分钟</p>
-            <p>公告： 欢迎光临，很高兴为您服务~</p>
+            <p>{{ storeinfo.storename }}</p>
+            <p>月售{{ storeinfo.salescount }}&nbsp;&nbsp;平均配送45分钟</p>
+            <p>公告： {{ storeinfo.notice }}</p>
 
             <div class="st_icon">
                 <img
@@ -36,6 +36,7 @@
         <div class="st_list">
             <goods-list
                 :goodslist="shoplist"
+				:storeid="storeinfo.storeid"
                 @update_cart="updateData"
             ></goods-list>
         </div>
@@ -55,7 +56,7 @@
                 <p>&nbsp;免配送费</p>
             </div>
 
-            <div class="st_shoping_cart_son st_shoping_cart_buy">去结算</div>
+            <div class="st_shoping_cart_son st_shoping_cart_buy" @click="$router.push({ path: '/cart' })">去结算</div>
         </div>
 
         <div>
@@ -65,7 +66,7 @@
                 position="bottom"
                 :class="{ st_shoping_cart_list: true }"
             >
-                <goods-list :goodslist="shoplist"></goods-list>
+                <goods-list :goodslist="shoplist" :storeid="storeinfo.storeid"></goods-list>
             </van-popup>
         </div>
     </div>
@@ -76,12 +77,9 @@ import GoodsList from "@/components/goodsList";
 
 export default {
     name: "storelist",
-    mounted: function () {
+    created: function () {
 		this.storeinfo.storeid = this.$route.query.storeid;
 		this.getJson()
-        this.$nextTick(() => {
-            this.updateData();
-        });
     },
     data() {
         return {
@@ -122,7 +120,7 @@ export default {
                         this.shoplist[key].number = temp_data[goodsId].number;
                     }
                 }
-            }
+			}
 		},
 		getJson() {
             this.$axios
@@ -145,7 +143,6 @@ export default {
 			this.storeinfo.notice = temp.notice
 			this.storeinfo.salescount = temp.salescount
 			temp = temp.goodslist
-
 			for (const key in temp) {
 				let _obj = {}
 				_obj.goodsid = temp[key].goodsid
@@ -157,6 +154,7 @@ export default {
 				_obj.storeid = this.storeinfo.storeid
 				this.shoplist.push(_obj)
 			}
+			this.updateData()
 		}
     },
     computed: {

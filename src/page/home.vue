@@ -31,15 +31,19 @@
 
         <div class="discount_box">
             <div class="shop_list_head">
-                <span>推荐店铺</span>
+                <span>今日折扣</span>
             </div>
 
-            <van-grid :border="false" :column-num="2" class="discount_box_content">
+            <van-grid
+                :border="false"
+                :column-num="2"
+                class="discount_box_content"
+            >
                 <van-grid-item
-					 v-for="(item, index) in discountList"
-					 :key="index"
-				>
-					<van-image :src="item.imgSrc" />
+                    v-for="(item, index) in discountList"
+                    :key="index"
+                >
+                    <van-image :src="item.imgSrc" />
                 </van-grid-item>
             </van-grid>
         </div>
@@ -53,8 +57,8 @@
 
             <div
                 class="shop_list_content"
-                v-for="item in shop_list"
-                :key="item.id"
+                v-for="(item, index) in shop_list"
+                :key="index"
                 @click="
                     $router.push({
                         path: '/storelist',
@@ -63,7 +67,9 @@
                 "
             >
                 <img :src="item.url" width="100%" alt="" />
-                <p>{{ item.name }}</p>
+                <p>
+                    {{ item.name }} <span>月售 {{ item.salescount }}</span>
+                </p>
                 <van-rate v-model="item.star" color="#ffd21e" readonly />
 
                 <div class="shop_list_icon">
@@ -77,11 +83,14 @@
 <script>
 export default {
     name: "home",
+    mounted: function () {
+        this.getJson();
+    },
     data() {
         return {
             value: 2.5,
-			search_value: "",
-			discountList: [
+            search_value: "",
+            discountList: [
                 {
                     imgSrc: require("@/assets/img/discount1.png"),
                 },
@@ -99,27 +108,34 @@ export default {
                     alt: "第二张图",
                 },
             ],
-            shop_list: [
-                {
-                    id: 1,
-                    url: require("@/assets/img/food1.png"),
-                    iconurl: require("@/assets/img/shop_list/BurgerKing.png"),
-                    name: "Papa Johns",
-                    star: 4,
-                    storeid: "a",
-                },
-                {
-                    id: 2,
-                    url: require("@/assets/img/food2.png"),
-                    iconurl: require("@/assets/img/shop_list/BurgerKing.png"),
-                    name: "Papa Johns",
-                    star: 3,
-                    storeid: "a",
-                },
-            ],
+            shop_list: [],
         };
     },
-    methods: {},
+    methods: {
+        getJson() {
+            this.$axios
+                .get("/api/store.json")
+                .then((res) => {
+                    this.shopdata(res.data);
+                })
+                .catch((e) => {
+                    console.log("获取数据失败");
+                });
+        },
+        shopdata(data) {
+            for (const key in data) {
+                let _obj = {};
+                let temp = data[key];
+                _obj.url = require("@/assets/img/food1.png");
+                _obj.iconurl = require("@/assets/img/shop_list/BurgerKing.png");
+                _obj.name = temp.storename;
+                _obj.star = temp.star;
+                _obj.salescount = temp.salescount;
+                _obj.storeid = key;
+                this.shop_list.push(_obj);
+            }
+        },
+    },
 };
 </script>
 
@@ -143,16 +159,16 @@ export default {
 
 .search_box {
     width: 100%;
-	margin: 10px 0 0 0;
-	padding: 5px;
-	box-sizing: border-box;
+    margin: 10px 0 0 0;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 .my_carousel_box {
     height: auto;
-	*zoom: 1;
-	padding: 5px 17px;
-	box-sizing: border-box;
+    *zoom: 1;
+    padding: 5px 17px;
+    box-sizing: border-box;
 
     &:after {
         content: "";
@@ -164,46 +180,46 @@ export default {
 }
 
 .discount_box {
-	width: 100%;
-	box-sizing: border-box;
+    width: 100%;
+    box-sizing: border-box;
 
-	.shop_list_head {
-		width: 100%;
-		height: 30px;
-		line-height: 30px;
-		padding: 5px 17px;
-		box-sizing: border-box;
+    .shop_list_head {
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        padding: 5px 17px;
+        box-sizing: border-box;
 
-		span {
-			font-size: 16px;
-			font-weight: 600;
-			letter-spacing: 1px;
-		}
-	}
+        span {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+    }
 
-	.discount_box_content {
-		padding: 0px 9px;
-	}
+    .discount_box_content {
+        padding: 0px 9px;
+    }
 }
 
 .shop_list {
-	width: 99%;
-	position: relative;
-	margin: 0 auto;
-	
-	.shop_list_head {
-		width: 100%;
-		height: 30px;
-		line-height: 30px;
-		padding: 5px 17px;
-		box-sizing: border-box;
+    width: 99%;
+    position: relative;
+    margin: 0 auto;
 
-		span {
-			font-size: 16px;
-			font-weight: 600;
-			letter-spacing: 1px;
-		}
-	}
+    .shop_list_head {
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        padding: 5px 17px;
+        box-sizing: border-box;
+
+        span {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+    }
 
     .shop_list_content {
         position: relative;
@@ -217,6 +233,11 @@ export default {
         p {
             font-size: 18px;
             margin-bottom: 5px;
+
+            span {
+                float: right;
+                font-size: 14px;
+            }
         }
     }
 

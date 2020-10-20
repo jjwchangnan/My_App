@@ -77,59 +77,59 @@ export default {
     components: {
         appHeader,
         appFooter,
-	},
-	mounted: function(){
-		let that = this
-		setTimeout(function(){
-			that.user = that.$store.state.userinfo
-		},500)
-	},
+    },
+    mounted: function () {
+        let that = this;
+        setTimeout(function () {
+            that.user = that.$store.state.userinfo;
+        }, 500);
+    },
     data() {
         return {
-			user: "",
+            user: "",
             isShowLeftNav: false,
             left_nav_list: [
                 {
-                    icon: "cart-o",
-                    text: "Basket",
+                    icon: "user-o",
+                    text: "个人中心",
                     url: "",
                 },
                 {
-                    icon: "friends-o",
-                    text: "Joint order",
+                    icon: "wap-home-o",
+                    text: "我的地址",
                     url: "",
                 },
                 {
-                    icon: "cart-o",
-                    text: "Food",
+                    icon: "star-o",
+                    text: "我的收藏",
                     url: "",
                 },
                 {
-                    icon: "cart-o",
-                    text: "Products",
+                    icon: "cash-back-record",
+                    text: "账单流水",
                     url: "",
                 },
                 {
-                    icon: "cart-o",
-                    text: "Sale and",
+                    icon: "discount",
+                    text: "优惠券",
                     url: "",
                 },
             ],
         };
-    }/* ,
+    } /* ,
     computed: {
         ...mapState({
             userinfo: "userinfo",
         }),
 	} */,
-	watch: {
-		user: function() {
-			if(this.user.status == 0){
-				this.user.username = "游客"
-				this.user.email = "请登录账号"
-			}
-       }
-	},
+    watch: {
+        user: function () {
+            if (this.user.status == 0) {
+                this.user.username = "游客";
+                this.user.email = "请登录账号";
+            }
+        },
+    },
     methods: {
         show_nav_list() {
             this.isShowLeftNav = !this.isShowLeftNav;
@@ -146,7 +146,7 @@ export default {
     width: 80%;
     height: 100vh;
     background: #fff;
-    box-shadow: 5px 2px 10px #706f6f;
+    box-shadow: 2px 0px 100px #000000;
     z-index: 10001;
 
     .left_nav_head {
@@ -231,7 +231,6 @@ export default {
             span {
                 color: #525e69;
                 margin-left: 30px;
-                font-weight: 600;
             }
         }
     }
@@ -286,5 +285,6 @@ export default {
 }
 .slide-left-fade-enter, .slide-left-fade-leave-to /* .fade-leave-active, 2.1.8 版本以下 */ {
     transform: translateX(-100%);
+    opacity: 0;
 }
 </style>

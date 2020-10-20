@@ -39,10 +39,13 @@
 <script>
 export default {
     name: "GoodsList",
-    props: ["goodslist"],
+	props: ["goodslist", "storeid"],
+	methods: function() {
+		
+	},
     data() {
         return {
-
+			
 		};
     },
     methods: {
@@ -100,7 +103,6 @@ export default {
 		updateData() {
 			let temp_data = this.$store.state.cart
 			temp_data = temp_data[this.storeid];
-			console.log(this.storeid)
 			for (let goodsId in temp_data) {
 				for (let key in this.goodslist) {
 					if(goodsId == this.goodslist[key].goodsid){

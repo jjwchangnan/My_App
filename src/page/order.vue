@@ -1,16 +1,30 @@
 <template>
     <div class="order">
         <van-row class="order_title">
-            <van-col span="6" class="active">全部订单</van-col>
-            <van-col span="6">待确认</van-col>
-            <van-col span="6">待收货</van-col>
-            <van-col span="6">待评价</van-col>
+            <van-col
+                span="8"
+                :class="{ active: isActive[0] }"
+                @click="changeOrder(0)"
+                >待支付</van-col
+            >
+            <van-col
+                span="8"
+                :class="{ active: isActive[1] }"
+                @click="changeOrder(1)"
+                >配送中</van-col
+            >
+            <van-col
+                span="8"
+                :class="{ active: isActive[2] }"
+                @click="changeOrder(2)"
+                >待评价</van-col
+            >
         </van-row>
 
-        <div class="order_content">
+        <div class="order_content" v-if="isShow">
             <div
                 class="order_content_child"
-                v-for="(item, index) in orderlist"
+                v-for="(item, index) in orderdata"
                 :key="index"
             >
                 <div class="box_head">
@@ -23,8 +37,12 @@
                 </div>
                 <div class="box_content">
                     <p>
-                        <span>{{ item.type }}</span>
-                        <span>${{ item.price }}</span>
+                        <span
+                            >{{ item.goodsname }} &nbsp;&nbsp; x{{
+                                item.number
+                            }}</span
+                        >
+                        <span>${{ item.sumprice }}</span>
                     </p>
                     <div>再来一单</div>
                 </div>
@@ -37,49 +55,71 @@
 export default {
     name: "order",
     mounted: function () {
-        this.getJson();
+        this.getJson("/api/order.json", this.getOrder);
     },
     data() {
         return {
             goodsList: "",
-            orderlist: [
-                {
-                    id: 1,
-                    name: "宜宾烤五花肉",
-                    num: "403",
-                    number: 0,
-                    price: "20",
-                    url: require("@/assets/img/shop_list/store_icon.jpg"),
-                    storeid: "a",
-                    state: "订单已完成",
-                    type: "麻辣小龙虾套餐 2-3人份",
-                },
-                {
-                    id: 1,
-                    name: "宜宾烤五花肉",
-                    num: "403",
-                    number: 0,
-                    price: "20",
-                    url: require("@/assets/img/shop_list/store_icon.jpg"),
-                    storeid: "a",
-                    state: "订单已完成",
-                    type: "麻辣小龙虾套餐 2-3人份",
-                },
-            ],
+            isActive: [true, false, false],
+            isShow: true,
+            orderlist: {
+                paying: [],
+                transport: [],
+                done: [],
+            },
+            orderdata: "",
         };
     },
     methods: {
-        getJson() {
+        changeOrder(num) {
+            this.isActive.fill(false);
+            this.isActive[num] = true;
+            if (num == 0) {
+                this.orderdata = this.orderlist.paying;
+            } else if (num == 1) {
+                this.orderdata = this.orderlist.transport;
+            } else if (num == 2) {
+                this.orderdata = this.orderlist.done;
+            }
+
+            this.isShow = false;
+            this.$nextTick(() => (this.isShow = true));
+        },
+        getJson(url, callback) {
             this.$axios
-                .get(
-					"/api/order.json"
-                )
+                .get(url)
                 .then((res) => {
-                    console.log("数据是:", res);
+                    callback(res.data);
                 })
                 .catch((e) => {
                     console.log("获取数据失败");
                 });
+        },
+        getOrder(data) {
+            let userinfo = this.$store.state.userinfo;
+            for (const key in data) {
+                if (userinfo.username == key) {
+                    for (const i in data[key]) {
+                        let _obj = {};
+                        let temp = data[key][i];
+                        _obj.url = require("@/assets/img/shop_list/store_icon.jpg");
+                        temp.forEach((item) => {
+                            _obj.name = item.storename;
+                            _obj.goodsname = item.goodsname;
+                            _obj.number = item.number;
+                            _obj.sumprice = item.sumprice;
+                            if (i == "done") {
+                                this.orderlist.done.push(_obj);
+                            } else if (i == "paying") {
+                                this.orderlist.paying.push(_obj);
+                            } else if (i == "transport") {
+                                this.orderlist.transport.push(_obj);
+                            }
+                        });
+                    }
+                }
+            }
+            this.orderdata = this.orderlist.paying;
         },
     },
 };
